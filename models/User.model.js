@@ -16,9 +16,15 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'Password is required.']
     },
-    profilePicure:{
+     name: {
       type: String,
-      require: false,
+      required: [true, 'Please put your name. '],
+      unique: true,
+      trim: true
+    },
+    profilePicture:{
+      type: String,
+      required: false,
       default:"https://t4.ftcdn.net/jpg/07/03/86/11/360_F_703861114_7YxIPnoH8NfmbyEffOziaXy0EO1NpRHD.jpg"
     }
   },

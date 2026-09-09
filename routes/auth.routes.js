@@ -10,7 +10,7 @@ const { verifyToken } = require("../middleware/auth.middleware");
 // POST "api/auth/signup"
 
 router.post("/signup", async (req, res, next) => {
-  const { email, password, username, profilePicture } = req.body;
+  const { email, password, name, profilePicture } = req.body;
 
   if (!email || !password) {
     res
@@ -48,7 +48,7 @@ router.post("/signup", async (req, res, next) => {
     await User.create({
       email: email,
       password: hashedPassword,
-      username: username,
+      name: name,
       ...(profilePicture && { profilePicture }),
     });
 
@@ -82,22 +82,19 @@ router.post("/login", async (req, res, next) => {
       res.status(401).json({ errorMessage: "Invalid password" });
       return;
     }
-    // continue here...
-      res.send("you are logged in")
-
-      
+    
     // generate the Token JWT
     const payload = {
-      _id: foundUser._id,
-      email: foundUser.email,
-      name: foundUser.name,
-      //todo if we had roles, we would need to add the role of the user
+        _id: foundUser._id,
+        email: foundUser.email,
+        
+        //todo if we had roles, we would need to add the role of the user
     };
-
+    
     const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-      expiresIn: "7d",
+        expiresIn: "7d",
     });
-
+    
     res.status(200).json({ authToken, payload });
   } catch (error) {
     next(error);
