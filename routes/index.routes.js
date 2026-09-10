@@ -4,4 +4,9 @@ const router = require("express").Router();
 const authRoutes = require("./auth.routes");
 router.use("/auth", authRoutes);
 
-module.exports = router ;
+
+const tripRoutes = require("./trip.routes");
+router.use("/trip", tripRoutes);
+
+
+module.exports = router;
