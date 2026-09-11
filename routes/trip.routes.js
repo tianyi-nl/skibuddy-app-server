@@ -63,7 +63,7 @@ router.put("/:tripId", verifyToken, async (req, res, next) => {
       return res.status(404).json({ message: "Trip not found" });
     }
 
-    if (trip.creator.toString() !== req.payload._id) { // ✅ fixed
+    if (trip.creator.toString() !== req.payload._id) { 
       return res.status(403).json({ message: "Not authorized" });
     }
 
