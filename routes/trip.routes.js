@@ -3,7 +3,8 @@ const router = express.Router();
 const Trip = require("../models/Trip.model.js");
 const { verifyToken } = require("../middleware/auth.middleware.js");
 
-// GET "api/trip"
+// GET "api/trip" (/api/join-request/trip/tripId)
+
 router.get("/", async (req, res, next) => {
   try {
     const response = await Trip.find().populate("creator", "name email");

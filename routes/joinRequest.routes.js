@@ -13,6 +13,8 @@ router.get("/trip/:tripId", verifyToken, async(req, res, next) => {
     if (!trip) {
       return res.status(404).json({ message: "Trip not found" });
     }
+    
+     // creator only
 
     if (trip.creator.toString() !== req.payload._id) {
       return res.status(403).json({ message: "Not authorized" });
@@ -52,6 +54,59 @@ router.post("/", verifyToken, async (req, res, next) => {
     if (error.code === 11000) {
       return res.status(400).json({ message: "You already requested to join this trip" });
     }
+    next(error);
+  }
+});
+
+// ACCEPT a join request
+router.put("/:requestId/accept", verifyToken, async (req, res, next) => {
+  try {
+    const joinRequest = await JoinRequest.findById(req.params.requestId);
+    if (!joinRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const trip = await Trip.findById(joinRequest.trip);
+    if (trip.creator.toString() !== req.payload._id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const acceptedCount = await JoinRequest.countDocuments({
+      trip: trip._id,
+      status: "accepted",
+    });
+    const availableSpots = trip.maxPeople - 1 - acceptedCount; // -1 for the creator
+    if (availableSpots <= 0) {
+      return res.status(400).json({ message: "Trip is full" });
+    }
+
+    joinRequest.status = "accepted";
+    await joinRequest.save();
+    res.status(202).json(joinRequest);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+//REJECT a join request (trip creator only)
+
+router.put("/:requestId/reject", verifyToken, async (req, res, next) => {
+  try {
+    const joinRequest = await JoinRequest.findById(req.params.requestId);
+    if (!joinRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const trip = await Trip.findById(joinRequest.trip);
+    if (trip.creator.toString() !== req.payload._id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    joinRequest.status = "rejected";
+    await joinRequest.save();
+    res.status(202).json(joinRequest);
+  } catch (error) {
     next(error);
   }
 });
