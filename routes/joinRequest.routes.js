@@ -112,5 +112,39 @@ router.put("/:requestId/reject", verifyToken, async (req, res, next) => {
 });
 
 
+// GET the logged-in user's own join request for a specific trip (if any)
+router.get("/trip/:tripId/mine", verifyToken, async (req, res, next) => {
+  try {
+    const joinRequest = await JoinRequest.findOne({
+      trip: req.params.tripId,
+      user: req.payload._id,
+    });
+    res.status(200).json(joinRequest); // will be null if none exists
+  } catch (error) {
+    next(error);
+  }
+});
+
+// CANCEL (delete) your own pending join request
+router.delete("/:requestId", verifyToken, async (req, res, next) => {
+  try {
+    const joinRequest = await JoinRequest.findById(req.params.requestId);
+    if (!joinRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (joinRequest.user.toString() !== req.payload._id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await JoinRequest.findByIdAndDelete(req.params.requestId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
 module.exports = router;
 
