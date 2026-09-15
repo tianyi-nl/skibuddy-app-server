@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Trip = require("../models/Trip.model.js");
 const { verifyToken } = require("../middleware/auth.middleware.js");
+const JoinRequest = require("../models/JoinRequest.model.js");
 
 // GET "api/trip" (/api/join-request/trip/tripId)
 
@@ -112,5 +113,21 @@ router.delete("/:tripId", verifyToken, async (req, res, next) => {
   }
 });
 
+
+// GET trips created by me, and trips I've requested to join
+router.get("/mine/all", verifyToken, async (req, res, next) => {
+  try {
+    const createdTrips = await Trip.find({ creator: req.payload._id });
+
+    const myJoinRequests = await JoinRequest.find({ user: req.payload._id }).populate({
+      path: "trip",
+      populate: { path: "creator", select: "name email" },
+    });
+
+    res.status(200).json({ createdTrips, myJoinRequests });
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
