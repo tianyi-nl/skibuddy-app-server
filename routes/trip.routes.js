@@ -8,7 +8,7 @@ const JoinRequest = require("../models/JoinRequest.model.js");
 
 router.get("/", async (req, res, next) => {
   try {
-    const response = await Trip.find().populate("creator", "name email");
+    const response = await Trip.find().populate("creator", "name email profilePicture");
     res.status(200).json(response);
   } catch (error) {
     next(error);
@@ -21,7 +21,7 @@ router.get("/:tripId", async (req, res, next) => {
   try {
     const response = await Trip.findById(req.params.tripId).populate(
       "creator",
-      "name email",
+      "name email profilePicture",
     );
     if (!response) {
       return res.status(404).json({ message: "Trip not found" });
