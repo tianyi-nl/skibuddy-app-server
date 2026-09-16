@@ -12,4 +12,7 @@ const joinRequestRoutes = require("./joinRequest.routes");
 router.use("/join-request", joinRequestRoutes);
 
 
+const uploadRoutes = require("./upload.routes");
+router.use("/upload", uploadRoutes);
+
 module.exports = router;
