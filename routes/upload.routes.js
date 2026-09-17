@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload.middleware");
-const { verifyToken } = require("../middleware/auth.middleware");
 
-router.post("/", verifyToken, upload.single("image"), (req, res, next) => {
+router.post("/", upload.single("image"), (req, res, next) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
