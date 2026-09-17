@@ -22,7 +22,7 @@ router.get("/trip/:tripId", verifyToken, async(req, res, next) => {
 
     const response = await JoinRequest.find({ trip: req.params.tripId }).populate(
       "user",
-      "name email"
+      "name email profilePicture"
     );
     res.status(200).json(response);
     } catch (error) {
